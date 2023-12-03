@@ -36,12 +36,28 @@ const run = async () => {
 
     // creating db and collections
     const brandCollection = client.db("foodieDB").collection("brands");
+    const productCollection = client.db("foodieDB").collection("products");
+
+    // Get all brands
+    app.get("/brands", async (req, res) => {
+      const result = await brandCollection.find().toArray();
+      res.send(result);
+    });
 
     // Add brand
     app.post("/addbrand", async (req, res) => {
       const brand = await req.body;
 
       const result = await brandCollection.insertOne(brand);
+
+      res.send(result);
+    });
+
+    // Add Product
+    app.post("/addproduct", async (req, res) => {
+      const product = await req.body;
+
+      const result = await productCollection.insertOne(product);
 
       res.send(result);
     });
