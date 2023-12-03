@@ -44,12 +44,22 @@ const run = async () => {
       res.send(result);
     });
 
+    // Get single brand
+    app.get("/brands/:name", async (req, res) => {
+      const name =
+        req.params.name[0].toUpperCase() + req.params.name.substring(1);
+
+      const filter = { brand: name };
+
+      const result = await productCollection.find(filter).toArray();
+
+      res.send(result);
+    });
+
     // Add brand
     app.post("/addbrand", async (req, res) => {
       const brand = await req.body;
-
       const result = await brandCollection.insertOne(brand);
-
       res.send(result);
     });
 
