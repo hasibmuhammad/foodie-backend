@@ -37,6 +37,7 @@ const run = async () => {
     // creating db and collections
     const brandCollection = client.db("foodieDB").collection("brands");
     const productCollection = client.db("foodieDB").collection("products");
+    const cartCollection = client.db("foodieDB").collection("cart");
 
     // Get all brands
     app.get("/brands", async (req, res) => {
@@ -83,6 +84,28 @@ const run = async () => {
       const query = { _id: new ObjectId(id) };
       const result = await productCollection.findOne(query);
 
+      res.send(result);
+    });
+
+    // Add cart
+    app.post("/addcart", async (req, res) => {
+      const cart = await req.body;
+
+      // check if already exist
+      const query = { _id: cart._id };
+      const cartExist = await cartCollection.findOne(query);
+
+      if (cartExist) {
+        res.send({ alreadyExist: true });
+      } else {
+        const result = await cartCollection.insertOne(cart);
+        res.send(result);
+      }
+    });
+
+    // Get cart
+    app.get("/cart", async (req, res) => {
+      const result = await cartCollection.find().toArray();
       res.send(result);
     });
   } finally {
