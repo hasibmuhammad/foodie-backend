@@ -1,6 +1,6 @@
 const express = require("express");
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
 
 // creating the app
@@ -46,8 +46,7 @@ const run = async () => {
 
     // Get single brand
     app.get("/brands/:name", async (req, res) => {
-      const name =
-        req.params.name[0].toUpperCase() + req.params.name.substring(1);
+      const name = req.params.name;
 
       const filter = { brand: name };
 
@@ -68,6 +67,21 @@ const run = async () => {
       const product = await req.body;
 
       const result = await productCollection.insertOne(product);
+
+      res.send(result);
+    });
+
+    // Get all products
+    app.get("/products", async (req, res) => {
+      const result = await productCollection.find().toArray();
+      res.send(result);
+    });
+
+    // Get single product
+    app.get("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await productCollection.findOne(query);
 
       res.send(result);
     });
