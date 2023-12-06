@@ -118,6 +118,35 @@ const run = async () => {
 
       res.send(result);
     });
+
+    // Update product
+    app.put("/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const product = await req.body;
+
+      const filter = { _id: new ObjectId(id) };
+      const option = { upsert: true };
+
+      const updateDoc = {
+        $set: {
+          name: product.name,
+          brand: product.brand,
+          type: product.type,
+          price: product.price,
+          photo: product.photo,
+          rating: product.rating,
+          desc: product.desc,
+        },
+      };
+
+      const result = await productCollection.updateOne(
+        filter,
+        updateDoc,
+        option
+      );
+
+      res.send(result);
+    });
   } finally {
   }
 };
