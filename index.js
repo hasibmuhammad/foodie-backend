@@ -39,6 +39,11 @@ const run = async () => {
     const productCollection = client.db("foodieDB").collection("products");
     const cartCollection = client.db("foodieDB").collection("cart");
 
+    // Welcome route
+    app.get("/", (req, res) => {
+      res.send(`<h1>Welcome to Foodie Backend!</h1>`);
+    });
+
     // Get all brands
     app.get("/brands", async (req, res) => {
       const result = await brandCollection.find().toArray();
@@ -150,14 +155,11 @@ const run = async () => {
   } finally {
   }
 };
-run().catch(console.dir);
-
-// Welcome route
-app.get("/", (req, res) => {
-  res.send(`<h1>Welcome to Foodie Backend!</h1>`);
-});
-
-// Creating the server
-app.listen(port, () => {
-  console.log(`Foodie backend is running on port: ${port}`);
-});
+run()
+  .then(() => {
+    // Creating the server
+    app.listen(port, () => {
+      console.log(`Foodie backend is running on port: ${port}`);
+    });
+  })
+  .catch(console.dir);
