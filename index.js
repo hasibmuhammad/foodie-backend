@@ -7,7 +7,9 @@ const cors = require("cors");
 const app = express();
 
 // middleware
-app.use(cors());
+app.use(
+  cors({ origin: ["http://localhost:5173", "https://foodie-be4f4.web.app"] })
+);
 app.use(express.json());
 
 const port = process.env.PORT || 3000;
@@ -97,20 +99,28 @@ const run = async () => {
       const cart = await req.body;
 
       // check if already exist
-      const query = { _id: cart._id };
+      const query = { productId: cart.productId, email: req.query.email };
       const cartExist = await cartCollection.findOne(query);
 
       if (cartExist) {
-        res.send({ alreadyExist: true });
+        const amount = cartExist.amount + 1;
+        const result = await cartCollection.updateOne(query, {
+          $set: { amount: amount },
+        });
+        res.send({ result, alreadyExist: true });
       } else {
-        const result = await cartCollection.insertOne(cart);
+        const result = await cartCollection.insertOne({
+          ...cart,
+        });
         res.send(result);
       }
     });
 
     // Get cart
     app.get("/cart", async (req, res) => {
-      const result = await cartCollection.find().toArray();
+      const result = await cartCollection
+        .find({ email: req.query.email })
+        .toArray();
       res.send(result);
     });
 
